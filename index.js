@@ -1,9 +1,26 @@
 const fs = require('fs');
 const program = require('commander');
 
-function makeConfigDB(driver, dbName, dir) {
+function checkDirExists(callback) {
+  const path = process.cwd();
+  if (!fs.existsSync(`${path}/database`)) {
+    fs.mkdirSync(`${path}/database`);
+  }
+
+  if (!fs.existsSync(`${path}/database/migrations`)) {
+    fs.mkdirSync(`${path}/database/migrations`);
+  }
+
+  if (!fs.existsSync(`${path}/database/seeders`)) {
+    fs.mkdirSync(`${path}/database/seeders`);
+  }
+
+  return callback();
+}
+
+function makeConfigDB(driver, dbName) {
   if (driver !== 'mysql' && driver !== 'mongodb') {
-    console.log('Sorry, moongarmjs-cli only support MySql or MongoDB');
+    process.stdout.write('Sorry, moongarmjs-cli only support MySql or MongoDB\n');
   } else {
     const migrationText = {
       database: dbName,
@@ -12,24 +29,25 @@ function makeConfigDB(driver, dbName, dir) {
       port: '3306',
       username: 'root',
       password: '',
-      migrationDir: dir,
+      migrationDir: `${process.cwd()}/database/migrations`,
+      seederDir: `${process.cwd()}/database/seeders`,
     };
 
-    if (fs.existsSync(`${dir}/${dbName}.json`)) {
-      console.log('Sorry, database config already exists.');
+    if (fs.existsSync(`${process.cwd()}/moongarm-dbconfig.json`)) {
+      process.stdout.write('Sorry, database config already exists.\n');
     } else {
-      fs.writeFile(`${dir}/moongarm-dbconfig.json`, JSON.stringify(migrationText, null, 2), (err) => {
+      fs.writeFile(`${process.cwd()}/moongarm-dbconfig.json`, JSON.stringify(migrationText, null, 2), (err) => {
         if (err) {
-          console.log('Sorry :(, database config has failed to be created.');
+          process.stdout.write('Sorry :(, database config has failed to be created.\n');
         } else {
-          console.log('Database config was successfully created.');
+          process.stdout.write('Database config was successfully created.\n');
         }
       });
     }
   }
 }
 
-function makeMigrationFile(name, dir) {
+function makeMigrationFile(name) {
   const migrationText = {
     tableName: name,
     field: [
@@ -43,33 +61,35 @@ function makeMigrationFile(name, dir) {
     ],
   };
 
-  if (fs.existsSync(`${dir}/${name}.json`)) {
-    console.log('Sorry, migration file already exists.');
-  } else if (!fs.existsSync(`${dir}/moongarm-dbconfig.json`)) {
-    console.log('Sorry, database config not exists.\nPlease create dbconfig with run command\n\'moongarm-cli make:config <db_type> <database_name> <directory_path>\'');
-  } else {
-    fs.writeFile(`${dir}/${name}.json`, JSON.stringify(migrationText, null, 2), (err) => {
-      if (err) {
-        console.log('Sorry :(, migration file has failed to be created.');
-      } else {
-        console.log(`Migration ${name} was successfully created.`);
-      }
-    });
-  }
+  checkDirExists(() => {
+    if (fs.existsSync(`${process.cwd()}/database/migrations/${name}.json`)) {
+      process.stdout.write('Sorry, migration file already exists.\n');
+    } else if (!fs.existsSync(`${process.cwd()}/moongarm-dbconfig.json`)) {
+      process.stdout.write('Sorry, database config not exists.\nPlease create dbconfig with run command\n\'moongarm-cli make:config <db_type> <database_name>\'\n');
+    } else {
+      fs.writeFile(`${process.cwd()}/database/migrations/${name}.json`, JSON.stringify(migrationText, null, 2), (err) => {
+        if (err) {
+          process.stdout.write('Sorry :(, migration file has failed to be created.\n');
+        } else {
+          process.stdout.write(`Migration ${name} was successfully created.\n`);
+        }
+      });
+    }
+  });
 }
 
 program
-  .command('make:migration <name> <dir>')
+  .command('make:migration <name>')
   .description('Make migration file')
-  .action((name, dir) => {
-    makeMigrationFile(name, dir);
+  .action((name) => {
+    makeMigrationFile(name);
   });
 
 program
-  .command('make:config <driver> <dbName> <dir>')
+  .command('make:config <driver> <dbName>')
   .description('Make database configuration file')
-  .action((driver, dbName, dir) => {
-    makeConfigDB(driver, dbName, dir);
+  .action((driver, dbName) => {
+    makeConfigDB(driver, dbName);
   });
 
 program.parse(process.argv);
