@@ -1,6 +1,8 @@
 const fs = require('fs');
 const program = require('commander');
 
+const mysql = require('./dbMysql');
+
 function checkDirExists(callback) {
   const path = process.cwd();
   if (!fs.existsSync(`${path}/database`)) {
@@ -78,6 +80,25 @@ function makeMigrationFile(name) {
   });
 }
 
+function migrateMysql() {
+  // const files = fs.readdirSync(`${process.cwd()}/database/migrations`);
+  // files.forEach((file) => {
+  //   if (!fs.statSync(`${process.cwd()}/database/migrations/${file}`).isDirectory()) {
+  //     fs.readFile(`${process.cwd()}/database/migrations/${file}`, 'utf8', (err, data) => {
+  //       //
+  //     });
+  //   }
+  // });
+  mysql.connection();
+}
+
+program
+  .command('make:config <driver> <dbName>')
+  .description('Make database configuration file')
+  .action((driver, dbName) => {
+    makeConfigDB(driver, dbName);
+  });
+
 program
   .command('make:migration <name>')
   .description('Make migration file')
@@ -86,10 +107,12 @@ program
   });
 
 program
-  .command('make:config <driver> <dbName>')
-  .description('Make database configuration file')
-  .action((driver, dbName) => {
-    makeConfigDB(driver, dbName);
+  .command('migrate <driver>')
+  .description('Make migration from newer')
+  .action((driver) => {
+    if (driver === 'mysql') {
+      migrateMysql();
+    }
   });
 
 program.parse(process.argv);
