@@ -49,7 +49,15 @@ function makeConfigDB(driver, dbName) {
           process.exit();
         } else {
           process.stdout.write('Database config was successfully created.\n');
-          process.exit();
+          mysql.connection()
+            .then((data) => {
+              if (data === null) {
+                mysql.createMigrationDB()
+                  .then(() => {
+                    process.exit();
+                  });
+              }
+            });
         }
       });
     }
