@@ -1,7 +1,7 @@
 const fs = require('fs');
 const program = require('commander');
 
-const mysql = require('./dbMysql');
+const mysql = require('./lib/dbMysql');
 
 function checkDirExists(callback) {
   const path = process.cwd();
@@ -78,7 +78,8 @@ function makeMigrationFile(name) {
       process.stdout.write('Sorry, database config not exists.\nPlease create dbconfig with run command\n\'moongarm-cli make:config <db_type> <database_name>\'\n');
       process.exit();
     } else {
-      fs.writeFile(`${process.cwd()}/database/migrations/${name}.json`, JSON.stringify(migrationText, null, 2), (err) => {
+      const milliseconds = new Date().getTime();
+      fs.writeFile(`${process.cwd()}/database/migrations/${milliseconds}_${name}.json`, JSON.stringify(migrationText, null, 2), (err) => {
         if (err) {
           process.stdout.write('Sorry :(, migration file has failed to be created.\n');
           process.exit();
@@ -100,17 +101,20 @@ function migrateMysql() {
             process.stdout.write('Sorry, database config not exists.\nPlease create dbconfig with run command\n\'moongarm-cli make:config <db_type> <database_name>\'\n');
             process.exit();
           } else {
-            fs.readdirSync(`${process.cwd()}/database/migrations/`).forEach((file) => {
-              mysql.createTable(file)
+            const dir = fs.readdirSync(`${process.cwd()}/database/migrations/`);
+            for (let i = 0; i < dir.length; i += 1) {
+              mysql.createTable(dir[i])
                 .then(() => {
                   process.stdout.write('Migration finished.\n');
-                  process.exit();
+                  if (i === (dir.length - 1)) {
+                    process.exit();
+                  }
                 })
                 .catch((err) => {
-                  process.stdout.write(`Migration failed with error: ${err.message}`);
+                  process.stdout.write(`Migration failed with error: ${err.message}\n`);
                   process.exit();
                 });
-            });
+            }
           }
         });
       }
@@ -135,12 +139,10 @@ program
   });
 
 program
-  .command('migrate <driver>')
+  .command('migrate')
   .description('Make migration from newer')
-  .action((driver) => {
-    if (driver === 'mysql') {
-      migrateMysql();
-    }
+  .action(() => {
+    migrateMysql();
   });
 
 program.parse(process.argv);
