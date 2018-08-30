@@ -111,16 +111,23 @@ function migrateMysql() {
           } else {
             const dir = fs.readdirSync(`${process.cwd()}/database/migrations/`);
             for (let i = 0; i < dir.length; i += 1) {
-              mysql.createTable(dir[i])
-                .then(() => {
-                  process.stdout.write('Migration finished.\n');
-                  if (i === (dir.length - 1)) {
-                    process.exit();
+              mysql.checkMigrationNewer(dir[i])
+                .then((check) => {
+                  if (check.length === 0) {
+                    mysql.createTable(dir[i])
+                      .then(() => {
+                        if (i === (dir.length - 1)) {
+                          process.exit();
+                        }
+                      })
+                      .catch((err) => {
+                        process.stdout.write(`Migration failed with error: ${err.message}\n`);
+                        process.exit();
+                      });
                   }
                 })
                 .catch((err) => {
-                  process.stdout.write(`Migration failed with error: ${err.message}\n`);
-                  process.exit();
+                  process.stdout.write(`Sorry migration failed with error: ${err}`);
                 });
             }
           }
