@@ -139,6 +139,56 @@ function migrateMysql() {
     });
 }
 
+function rollbackNewer() {
+  mysql.connection()
+    .then((data) => {
+      if (data === null) {
+        mysql.rollbackNewer()
+          .then((batchNewer) => {
+            mysql.removeBatchMigration(batchNewer)
+              .then(() => {
+                process.stdout.write('Rollback success.\n');
+                process.exit();
+              })
+              .catch(() => {
+                process.stdout.write('Rollback success but failed to remove migration log.\n');
+                process.exit();
+              });
+          })
+          .catch((err) => {
+            process.stdout.write(`Sorry, rollback failed with error: ${err}\n`);
+            process.exit();
+          });
+      }
+    })
+    .catch(() => {
+      process.exit();
+    });
+}
+
+function rollbackStep(step) {
+  mysql.connection()
+    .then((data) => {
+      if (data === null) {
+        mysql.rollbackWithStep(step)
+          .then((batchNewer) => {
+            mysql.removeBatchMigration(batchNewer)
+              .then(() => {
+                process.stdout.write(`Rollback step ${step} success.\n`);
+                process.exit();
+              })
+              .catch(() => {
+                process.stdout.write(`Rollback step ${step} success but failed to remove migration log.\n`);
+                process.exit();
+              });
+          });
+      }
+    })
+    .catch(() => {
+      process.exit();
+    });
+}
+
 program
   .command('make:config <driver> <dbName>')
   .description('Make database configuration file')
@@ -155,9 +205,21 @@ program
 
 program
   .command('migrate')
-  .description('Make migration from newer')
+  .description('Migrate from newer file migration')
   .action(() => {
     migrateMysql();
+  });
+
+program
+  .command('migrate:rollback')
+  .description('Make migration from newer')
+  .option('--step <step>', '')
+  .action((options) => {
+    if (options.step === undefined) {
+      rollbackNewer();
+    } else if (options.step !== undefined) {
+      rollbackStep(options.step);
+    }
   });
 
 program.parse(process.argv);
