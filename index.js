@@ -212,8 +212,8 @@ program
 
 program
   .command('migrate:rollback')
-  .description('Make migration from newer')
-  .option('--step <step>', '')
+  .description('To rollback the latest migration operation')
+  .option('--step <step>', 'To rollback limited migration by providing the step')
   .action((options) => {
     if (options.step === undefined) {
       rollbackNewer();
