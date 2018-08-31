@@ -42,4 +42,11 @@ program
     }
   });
 
+program
+  .command('show:migration')
+  .description('Help you to show your migration history')
+  .action(() => {
+    migration.showList();
+  });
+
 program.parse(process.argv);
