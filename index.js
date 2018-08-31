@@ -100,7 +100,7 @@ function makeMigrationFile(name) {
   });
 }
 
-function migrateMysql() {
+function migrate() {
   mysql.connection()
     .then((data) => {
       if (data === null) {
@@ -117,6 +117,7 @@ function migrateMysql() {
                     mysql.createTable(dir[i])
                       .then(() => {
                         if (i === (dir.length - 1)) {
+                          process.stdout.write('Migration success.\n');
                           process.exit();
                         }
                       })
@@ -127,7 +128,7 @@ function migrateMysql() {
                   }
                 })
                 .catch((err) => {
-                  process.stdout.write(`Sorry migration failed with error: ${err}`);
+                  process.stdout.write(`Sorry migration failed with error: ${err}\n`);
                 });
             }
           }
@@ -135,6 +136,26 @@ function migrateMysql() {
       }
     })
     .catch(() => {
+      process.exit();
+    });
+}
+
+function migrateRefresh() {
+  mysql.connection()
+    .then((data) => {
+      if (data === null) {
+        mysql.migrationRefresh()
+          .then(() => {
+            migrate();
+          })
+          .catch((err) => {
+            process.stdout.write(`Migration refresh failed with error: ${err.message}\n`);
+            process.exit();
+          });
+      }
+    })
+    .catch(() => {
+      process.stdout.write('Migrate refresh failed.\n');
       process.exit();
     });
 }
@@ -207,7 +228,14 @@ program
   .command('migrate')
   .description('Migrate from newer file migration')
   .action(() => {
-    migrateMysql();
+    migrate();
+  });
+
+program
+  .command('migrate:refresh')
+  .description('Execution migration file again and re-creates database')
+  .action(() => {
+    migrateRefresh();
   });
 
 program
