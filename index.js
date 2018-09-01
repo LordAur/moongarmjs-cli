@@ -1,6 +1,7 @@
 const program = require('commander');
 
 const migration = require('./lib/mysql/migration');
+const seeder = require('./lib/mysql/seeder');
 
 program
   .command('make:config <driver> <databaseName>')
@@ -47,6 +48,13 @@ program
   .description('Help you to show your migration history')
   .action(() => {
     migration.showList();
+  });
+
+program
+  .command('make:seeder <tableName>')
+  .description('Simple method of seeding your database with test data')
+  .action((tableName) => {
+    seeder.make(tableName);
   });
 
 program.parse(process.argv);
