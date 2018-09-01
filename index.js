@@ -2,6 +2,7 @@ const fs = require('fs');
 const program = require('commander');
 
 const mysql = require('./lib/dbMysql');
+const hell = require('./lib/hellGrindMysql');
 
 function checkDirExists(callback) {
   const path = process.cwd();
@@ -139,6 +140,27 @@ function migrateMysql() {
     });
 }
 
+function hellgrind() {
+  hell.connection().then((data) => {
+    if (data === null) {
+      hell.test().then((input) => {
+        hell.all(input).then((query) => {
+          query.forEach((item) => {
+            Object.keys(item).forEach((key) => {
+              console.log(`${key}: ${item[key]}\n`);
+            });
+          });
+          hellgrind();
+        });
+      });
+    } else {
+      process.stdout.write('Hellgrind is cannot runing\n');
+    }
+  }).catch(() => {
+    process.exit();
+  });
+}
+
 program
   .command('make:config <driver> <dbName>')
   .description('Make database configuration file')
@@ -158,6 +180,14 @@ program
   .description('Make migration from newer')
   .action(() => {
     migrateMysql();
+  });
+
+program
+  .command('hellgrind')
+  .description('Run query for testing')
+  .action(() => {
+    process.stdout.write('Hellgrind is run:\n\n');
+    hellgrind();
   });
 
 program.parse(process.argv);
