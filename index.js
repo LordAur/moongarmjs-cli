@@ -154,7 +154,7 @@ function hellgrind() {
         });
       });
     } else {
-      process.stdout.write('Hellgrind is cannot runing\n');
+      process.stdout.write('Hellgrind is cannot runing\n\n');
     }
   }).catch(() => {
     process.exit();
