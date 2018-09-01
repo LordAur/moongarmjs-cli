@@ -54,7 +54,14 @@ program
   .command('make:seeder <tableName>')
   .description('To help you seeding database with test data')
   .action((tableName) => {
-    seeder.make(tableName);
+    seeder.make(`${tableName}.json`);
+  });
+
+program
+  .command('run:seeder')
+  .description('Run seeder for inserting to database')
+  .action(() => {
+    seeder.run();
   });
 
 program.parse(process.argv);
