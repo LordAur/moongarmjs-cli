@@ -10,4 +10,5 @@ MoongarmJS-CLI still in the development phase.
 
 ## Features
 *  Migration database (Mysql only for now)
+*  Seeding database   (Mysql only for now)
 *  Rollback database  (Mysql only for now)
