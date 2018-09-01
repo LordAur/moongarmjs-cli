@@ -26,7 +26,7 @@ program
 
 program
   .command('migrate:refresh')
-  .description('Execution migration file again and re-creates database')
+  .description('Run migration file again and re-creates database')
   .action(() => {
     migration.refresh();
   });
@@ -52,7 +52,7 @@ program
 
 program
   .command('make:seeder <tableName>')
-  .description('Simple method of seeding your database with test data')
+  .description('To help you seeding database with test data')
   .action((tableName) => {
     seeder.make(tableName);
   });
