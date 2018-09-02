@@ -14,7 +14,8 @@ MoongarmJS-CLI still in the development phase.
 *  Rollback database  (Mysql only for now)
 
 ## Installation
-``npm install -g moongarmjs-cli``
+
+    npm install -g moongarmjs-cli
 
 ## How to use?
 
