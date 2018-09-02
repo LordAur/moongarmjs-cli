@@ -79,6 +79,23 @@ A migration file JSON structure has a object like this:
 |onDelete| Value will be deleted after relation key deleted|
 | onUpdate | Value will be updated after relation key value updated
 
+### Running Migrations
+To run all migration file, execute `migrate` command
+
+    moongarmjs-cli migrate
+### Rolling Back Migrations
+To rollback the latest migration, you can execute `migrate:rollback` command
+
+    moongarmjs-cli migrate:rollback
+You may rollback with a step migration. You can look at table migrations on the database.
+
+    moongarmjs-cli migrate:rollback --step=3
+### Rollback & Migrate Again
+You can run migrate and will rollback all of your migration. This command effectively re-creates your entire database.
+
+    moongarmjs-cli migrate:refresh
+
+ 
 
 
 
