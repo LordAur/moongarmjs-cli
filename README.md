@@ -13,6 +13,9 @@ MoongarmJS-CLI still in the development phase.
 *  Seeding database   (Mysql only for now)
 *  Rollback database  (Mysql only for now)
 
+## Installation
+``npm install -g moongarmjs-cli``
+
 ## How to use?
 
 ### Introduction Migration
