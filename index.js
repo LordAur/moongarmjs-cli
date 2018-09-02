@@ -1,185 +1,69 @@
-const fs = require('fs');
 const program = require('commander');
 
-const mysql = require('./lib/dbMysql');
-const hell = require('./lib/hellGrindMysql');
+const migration = require('./lib/mysql/migration');
+const seeder = require('./lib/mysql/seeder');
+const hellGrind = require('./lib/mysql/hellGrind');
 
-function checkDirExists(callback) {
-  const path = process.cwd();
-  if (!fs.existsSync(`${path}/database`)) {
-    fs.mkdirSync(`${path}/database`);
-  }
-
-  if (!fs.existsSync(`${path}/database/migrations`)) {
-    fs.mkdirSync(`${path}/database/migrations`);
-  }
-
-  if (!fs.existsSync(`${path}/database/seeders`)) {
-    fs.mkdirSync(`${path}/database/seeders`);
-  }
-
-  return callback();
-}
-
-function makeConfigDB(driver, dbName) {
-  if (driver !== 'mysql' && driver !== 'mongodb') {
-    process.stdout.write('Sorry, moongarmjs-cli only support MySql or MongoDB\n');
-    process.exit();
-  } else {
-    const migrationText = {
-      connection: driver,
-      database: dbName,
-      host: '127.0.0.1',
-      port: '3306',
-      username: 'root',
-      password: '',
-      engine: 'InnoDB',
-      charset: 'utf8',
-      collation: 'utf8_unicode_ci',
-      migrationDir: `${process.cwd()}/database/migrations`,
-      seederDir: `${process.cwd()}/database/seeders`,
-    };
-
-    if (fs.existsSync(`${process.cwd()}/moongarm-dbconfig.json`)) {
-      process.stdout.write('Sorry, database config already exists.\n');
-      process.exit();
-    } else {
-      fs.writeFile(`${process.cwd()}/moongarm-dbconfig.json`, JSON.stringify(migrationText, null, 2), (err) => {
-        if (err) {
-          process.stdout.write('Sorry :(, database config has failed to be created.\n');
-          process.exit();
-        } else {
-          process.stdout.write('Database config was successfully created.\n');
-          mysql.connection()
-            .then((data) => {
-              if (data === null) {
-                mysql.createMigrationDB()
-                  .then(() => {
-                    process.exit();
-                  });
-              }
-            });
-        }
-      });
-    }
-  }
-}
-
-function makeMigrationFile(name) {
-  const migrationText = {
-    tableName: name,
-    field: [
-      {
-        name: 'id',
-        type: 'increments',
-        count: null,
-        autoIncrement: true,
-        nullable: false,
-      },
-    ],
-  };
-
-  checkDirExists(() => {
-    if (fs.existsSync(`${process.cwd()}/database/migrations/${name}.json`)) {
-      process.stdout.write('Sorry, migration file already exists.\n');
-      process.exit();
-    } else if (!fs.existsSync(`${process.cwd()}/moongarm-dbconfig.json`)) {
-      process.stdout.write('Sorry, database config not exists.\nPlease create dbconfig with run command\n\'moongarm-cli make:config <db_type> <database_name>\'\n');
-      process.exit();
-    } else {
-      const milliseconds = new Date().getTime();
-      fs.writeFile(`${process.cwd()}/database/migrations/${milliseconds}_${name}.json`, JSON.stringify(migrationText, null, 2), (err) => {
-        if (err) {
-          process.stdout.write('Sorry :(, migration file has failed to be created.\n');
-          process.exit();
-        } else {
-          process.stdout.write(`Migration ${name} was successfully created.\n`);
-          process.exit();
-        }
-      });
-    }
-  });
-}
-
-function migrateMysql() {
-  mysql.connection()
-    .then((data) => {
-      if (data === null) {
-        checkDirExists(() => {
-          if (!fs.existsSync(`${process.cwd()}/moongarm-dbconfig.json`)) {
-            process.stdout.write('Sorry, database config not exists.\nPlease create dbconfig with run command\n\'moongarm-cli make:config <db_type> <database_name>\'\n');
-            process.exit();
-          } else {
-            const dir = fs.readdirSync(`${process.cwd()}/database/migrations/`);
-            for (let i = 0; i < dir.length; i += 1) {
-              mysql.checkMigrationNewer(dir[i])
-                .then((check) => {
-                  if (check.length === 0) {
-                    mysql.createTable(dir[i])
-                      .then(() => {
-                        if (i === (dir.length - 1)) {
-                          process.exit();
-                        }
-                      })
-                      .catch((err) => {
-                        process.stdout.write(`Migration failed with error: ${err.message}\n`);
-                        process.exit();
-                      });
-                  }
-                })
-                .catch((err) => {
-                  process.stdout.write(`Sorry migration failed with error: ${err}`);
-                });
-            }
-          }
-        });
-      }
-    })
-    .catch(() => {
-      process.exit();
-    });
-}
-
-function hellgrind() {
-  hell.connection().then((data) => {
-    if (data === null) {
-      hell.test().then((input) => {
-        hell.all(input).then((query) => {
-          query.forEach((item) => {
-            Object.keys(item).forEach((key) => {
-              console.log(`${key}: ${item[key]}\n`);
-            });
-          });
-          hellgrind();
-        });
-      });
-    } else {
-      process.stdout.write('Hellgrind is cannot runing\n\n');
-    }
-  }).catch(() => {
-    process.exit();
-  });
-}
 
 program
-  .command('make:config <driver> <dbName>')
+  .command('make:config <driver> <databaseName>')
   .description('Make database configuration file')
-  .action((driver, dbName) => {
-    makeConfigDB(driver, dbName);
+  .action((driver, databaseName) => {
+    migration.makeDatabaseConfiguration(databaseName);
   });
 
 program
   .command('make:migration <name>')
   .description('Make migration file')
   .action((name) => {
-    makeMigrationFile(name);
+    migration.makeMigrationFile(name);
   });
 
 program
   .command('migrate')
-  .description('Make migration from newer')
+  .description('Migrate from newer file migration')
   .action(() => {
-    migrateMysql();
+    migration.run();
+  });
+
+program
+  .command('migrate:refresh')
+  .description('Run migration file again and re-creates database')
+  .action(() => {
+    migration.refresh();
+  });
+
+program
+  .command('migrate:rollback')
+  .description('To rollback the latest migration operation')
+  .option('--step <step>', 'To rollback limited migration by providing the step')
+  .action((options) => {
+    if (options.step === undefined) {
+      migration.rollback();
+    } else if (options.step !== undefined) {
+      migration.rollbackWithStep(options.step);
+    }
+  });
+
+program
+  .command('show:migration')
+  .description('Help you to show your migration history')
+  .action(() => {
+    migration.showList();
+  });
+
+program
+  .command('make:seeder <tableName>')
+  .description('To help you seeding database with test data')
+  .action((tableName) => {
+    seeder.make(`${tableName}.json`);
+  });
+
+program
+  .command('run:seeder')
+  .description('Run seeder for inserting to database')
+  .action(() => {
+    seeder.run();
   });
 
 program
@@ -187,7 +71,7 @@ program
   .description('Run query for testing')
   .action(() => {
     process.stdout.write('Hellgrind is run:\n\n');
-    hellgrind();
+    hellGrind.main();
   });
 
 program.parse(process.argv);
