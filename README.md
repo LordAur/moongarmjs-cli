@@ -95,7 +95,63 @@ You can run migrate and will rollback all of your migration. This command effect
 
     moongarmjs-cli migrate:refresh
 
- 
+ ### Introduction Seeders
+Simple method of seeding your database with test data using seed JSON scheme. All seed scheme are stored in directory `database/seeds`. 
+### Make Seeders
+To generate a seeder, execute `make:seeder` command.
+
+    moongarmjs-cli make:seeder table_name
+### Seeder Structure
+A seeder file JSON structure has a object like this:
+```json
+{
+  "tableName": "users",
+  "batch": [
+     {
+       "username": "tester",
+       "full_name": "Tester"
+     }
+  ],
+  "autoSeeding": 1,
+}
+```
+|Command|Description  |
+|--|--|
+| tableName | Table name  |
+| batch | Array of table field|
+|autoSeeding| You can run seeder repeatedly
+
+### Make Random Value Seeder
+A seeder with random value has a object like this:
+```json
+{
+  "tableName": "users",
+  "batch": [
+    {
+      "username": {
+        "randomStringValue": true,
+        "randomLength": 10
+      },
+      "phone": {
+        "randomIntegerValue": true,
+        "randomLength": 13
+      }
+    }
+  ]
+}
+```
+|Command|Description  |
+|--|--|
+| randomStringValue | `true` or `false` for activate random string|
+| randomIntegerValue| `true` or `false` for activate random number|
+|randomLength| Total length random string or integer
+
+### Run Seeders
+You may use `run:seeder` command for run seeding and inserting to your database
+
+    moongarmjs-cli run:seeder
+
+
 
 
 
