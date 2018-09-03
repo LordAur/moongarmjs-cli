@@ -4,6 +4,8 @@ const program = require('commander');
 
 const migration = require('./lib/mysql/migration');
 const seeder = require('./lib/mysql/seeder');
+const hellGrind = require('./lib/mysql/hellGrind');
+
 
 program
   .command('make:config <driver> <databaseName>')
@@ -64,6 +66,14 @@ program
   .description('Run seeder for inserting to database')
   .action(() => {
     seeder.run();
+  });
+
+program
+  .command('hellgrind')
+  .description('Run query for testing')
+  .action(() => {
+    process.stdout.write('Hellgrind is run:\n\n');
+    hellGrind.main();
   });
 
 program.parse(process.argv);
