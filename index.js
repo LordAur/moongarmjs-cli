@@ -72,8 +72,9 @@ program
   .command('hellgrind')
   .description('Run query for testing')
   .action(() => {
-    process.stdout.write('Hellgrind is run:\n\n');
-    hellGrind.main();
+    const x = process.stdout.write('Hellgrind is run:\n\n');
+    x.close();
+    hellGrind.main(1);
   });
 
 program.parse(process.argv);
