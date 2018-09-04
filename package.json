@@ -1,7 +1,7 @@
 {
   "name": "moongarmjs-cli",
-  "version": "0.1.0",
-  "description": "MonngarmJS Framework Cli",
+  "version": "0.1.2-beta",
+  "description": "NodeJS Console Like Artisan Laravel",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +10,15 @@
     "cli",
     "moongarmjs"
   ],
+  "homepage": "https://github.com/LordAur/moongarmjs-cli",
+  "bugs": {
+    "url": "https://github.com/LordAur/moongarmjs-cli/issues",
+    "email": "yudha.webdev@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LordAur/moongarmjs-cli"
+  },
   "authors": [
     {
       "name": "Yudha Pratama",
@@ -26,6 +35,9 @@
       "github": "https://github.com/fachry2"
     }
   ],
+  "bin": {
+    "moongarmjs-cli": "index.js"
+  },
   "license": "MIT",
   "dependencies": {
     "commander": "^2.17.1",
@@ -35,7 +47,7 @@
     "response-time": "^2.3.2"
   },
   "devDependencies": {
-    "eslint": "^5.4.0",
+    "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0"
   },
