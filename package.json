@@ -1,7 +1,7 @@
 {
   "name": "moongarmjs-cli",
   "version": "0.1.2-beta",
-  "description": "MonngarmJS Framework Cli",
+  "description": "NodeJS Console Like Artisan Laravel",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +10,15 @@
     "cli",
     "moongarmjs"
   ],
+  "homepage": "https://github.com/LordAur/moongarmjs-cli",
+  "bugs": {
+    "url": "https://github.com/LordAur/moongarmjs-cli/issues",
+    "email": "yudha.webdev@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LordAur/moongarmjs-cli"
+  },
   "authors": [
     {
       "name": "Yudha Pratama",
