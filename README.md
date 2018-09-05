@@ -25,7 +25,7 @@ Migrations are like version control for your database, allowing your team to eas
 ### Generating Migrations
 To create a migration, use the `make:migration` MoongarmJS-CI command
 
-    moongarmjs-cli make:migration database_name
+    moongarm make:migration database_name
 
 The new migration file will be placed in your database/migrations directory. Migration file name contains a milliseconds which allow to determine the order of the migrations.
 
@@ -86,25 +86,25 @@ A migration file JSON structure has a object like this:
 ### Running Migrations
 To run all migration file, execute `migrate` command
 
-    moongarmjs-cli migrate
+    moongarm migrate
 ### Rolling Back Migrations
 To rollback the latest migration, you can execute `migrate:rollback` command
 
-    moongarmjs-cli migrate:rollback
+    moongarm migrate:rollback
 You may rollback with a step migration. You can look at table migrations on the database.
 
-    moongarmjs-cli migrate:rollback --step=3
+    moongarm migrate:rollback --step=3
 ### Rollback & Migrate Again
 You can run migrate and will rollback all of your migration. This command effectively re-creates your entire database.
 
-    moongarmjs-cli migrate:refresh
+    moongarm migrate:refresh
 
  ### Introduction Seeders
 Simple method of seeding your database with test data using seed JSON scheme. All seed scheme are stored in directory `database/seeds`. 
 ### Make Seeders
 To generate a seeder, execute `make:seeder` command.
 
-    moongarmjs-cli make:seeder table_name
+    moongarm make:seeder table_name
 ### Seeder Structure
 A seeder file JSON structure has a object like this:
 ```json
@@ -153,7 +153,7 @@ A seeder with random value has a object like this:
 ### Run Seeders
 You may use `run:seeder` command for run seeding and inserting to your database
 
-    moongarmjs-cli run:seeder
+    moongarm run:seeder
 
 
 
