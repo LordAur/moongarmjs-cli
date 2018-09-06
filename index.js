@@ -8,10 +8,10 @@ const hellGrind = require('./lib/mysql/hellGrind');
 
 
 program
-  .command('make:config <driver> <databaseName>')
+  .command('datasource')
   .description('Make database configuration file')
-  .action((driver, databaseName) => {
-    migration.makeDatabaseConfiguration(databaseName);
+  .action(() => {
+    migration.makeDatabaseConfiguration();
   });
 
 program
