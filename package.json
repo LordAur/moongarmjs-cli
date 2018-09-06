@@ -1,7 +1,7 @@
 {
   "name": "moongarmjs-cli",
-  "version": "0.2.0-beta",
-  "description": "NodeJS Console Like Artisan Laravel",
+  "version": "0.3.0-beta",
+  "description": "NodeJS Console",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -43,6 +43,7 @@
   "dependencies": {
     "commander": "^2.17.1",
     "mysql": "^2.16.0",
+    "prompts": "^1.0.0",
     "randomstring": "^1.1.5",
     "readline": "^1.3.0"
   },
