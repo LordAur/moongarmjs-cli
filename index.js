@@ -55,10 +55,10 @@ program
   });
 
 program
-  .command('make:seeder <tableName>')
+  .command('make:seeder')
   .description('To help you seeding database with test data')
-  .action((tableName) => {
-    seeder.make(`${tableName}.json`);
+  .action(() => {
+    seeder.make();
   });
 
 program
