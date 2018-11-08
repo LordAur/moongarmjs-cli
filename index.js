@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 const program = require('commander');
+const fs = require('fs');
 
 const migration = require('./lib/mysql/migration');
 const seeder = require('./lib/mysql/seeder');
@@ -58,7 +59,8 @@ program
   .command('make:seeder')
   .description('To help you seeding database with test data')
   .action(() => {
-    seeder.make();
+    const moongarmConfig = JSON.parse(fs.readFileSync(`${process.cwd()}/moongarm-dbconfig.json`, 'utf8'));
+    seeder.make(moongarmConfig.database);
   });
 
 program
