@@ -9,7 +9,8 @@
   "keywords": [
     "cli",
     "console",
-    "moongarmjs"
+    "moongarmjs",
+    "mysql"
   ],
   "homepage": "https://github.com/LordAur/moongarmjs-cli",
   "bugs": {
