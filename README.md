@@ -55,7 +55,7 @@ Simple method of seeding your database with test data using seed JSON scheme. Al
 ### Make Seeders
 To generate a seeder, execute `make:seeder` command.
 
-    moongarm make:seeder table_name
+    moongarm make:seeder
 ![](https://yudhapratama.com/files/render1542083787170.gif)
 ### Run Seeders
 You may use `run:seeder` command for run seeding and inserting to your database
